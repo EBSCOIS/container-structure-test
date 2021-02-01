@@ -33,6 +33,7 @@ type DriverConfig struct {
 	Save     bool   // used by Docker/Tar drivers
 	Metadata string // used by Host driver
 	Runtime  string // used by Docker driver
+	Mount    string // used by Docker driver
 }
 
 type Driver interface {

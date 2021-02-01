@@ -19,6 +19,7 @@ import "github.com/GoogleContainerTools/container-structure-test/pkg/types/unver
 type StructureTestOptions struct {
 	ImagePath   string
 	Driver      string
+	Mount       string
 	Runtime     string
 	Metadata    string
 	TestReport  string

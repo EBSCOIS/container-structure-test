@@ -102,6 +102,7 @@ func run(out io.Writer) error {
 		Save:     opts.Save,
 		Metadata: opts.Metadata,
 		Runtime:  opts.Runtime,
+		Mount:    opts.Mount,
 	}
 
 	var err error
@@ -193,7 +194,7 @@ func AddTestFlags(cmd *cobra.Command) {
 	cmd.Flags().StringVarP(&opts.Driver, "driver", "d", "docker", "driver to use when running tests")
 	cmd.Flags().StringVar(&opts.Metadata, "metadata", "", "path to image metadata file")
 	cmd.Flags().StringVar(&opts.Runtime, "runtime", "", "runtime to use with docker driver")
-
+	cmd.Flags().StringVar(&opts.Mount, "mount", "", "host path to folder to mount")
 	cmd.Flags().BoolVar(&opts.Pull, "pull", false, "force a pull of the image before running tests")
 	cmd.Flags().BoolVar(&opts.Save, "save", false, "preserve created containers after test run")
 	cmd.Flags().BoolVarP(&opts.Quiet, "quiet", "q", false, "flag to suppress output")

@@ -37,6 +37,7 @@ import (
 type DockerDriver struct {
 	originalImage string
 	currentImage  string
+	mount         string
 	cli           docker.Client
 	env           map[string]string
 	save          bool
@@ -51,6 +52,7 @@ func NewDockerDriver(args DriverConfig) (Driver, error) {
 	return &DockerDriver{
 		originalImage: args.Image,
 		currentImage:  args.Image,
+		mount:         args.Mount,
 		cli:           *newCli,
 		env:           nil,
 		save:          args.Save,
@@ -58,10 +60,28 @@ func NewDockerDriver(args DriverConfig) (Driver, error) {
 	}, nil
 }
 
+func splitMount(a string) (string, string) {
+	s := strings.Split(a, ":")
+	return s[0], s[1]
+}
+
 func (d *DockerDriver) hostConfig() *docker.HostConfig {
-	if d.runtime != "" {
+	if d.runtime != "" && d.mount == "" {
 		return &docker.HostConfig{
 			Runtime: d.runtime,
+		}
+	}
+	if d.runtime == "" && d.mount != "" {
+		sourceFolder, targetFolder := splitMount(d.mount)
+		return &docker.HostConfig{
+			Mounts: []docker.HostMount{{Source: sourceFolder, Target: targetFolder, Type: "bind"}},
+		}
+	}
+	if d.runtime != "" && d.mount != "" {
+		sourceFolder, targetFolder := splitMount(d.mount)
+		return &docker.HostConfig{
+			Runtime: d.runtime,
+			Mounts:  []docker.HostMount{{Source: sourceFolder, Target: targetFolder, Type: "bind"}},
 		}
 	}
 	return nil
@@ -94,6 +114,7 @@ func (d *DockerDriver) SetEnv(envVars []unversioned.EnvVar) error {
 	if err != nil {
 		return errors.Wrap(err, "Error creating container")
 	}
+
 	defer d.removeContainer(container.ID)
 	image, err := d.cli.CommitContainer(docker.CommitContainerOptions{
 		Container: container.ID,

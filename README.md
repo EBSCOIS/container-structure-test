@@ -67,6 +67,13 @@ and `stderr`. Additionally, any number of flags can be passed to the argument
 as normal. Each command in the setup section will run in a separate container
 and then commits a modified image to be the new base image for the test run.
 
+## Mount host folder to test container
+An example run with mounted folder looks like this:
+```shell
+container-structure-test test --image gcr.io/registry/image:latest --mount \
+ /host_folder:/target_folder --config config.yaml
+```
+
 #### Supported Fields:
 
 **NOTE: `schemaVersion` must be specified in all container-structure-test yamls. The current version is `2.0.0`.**
